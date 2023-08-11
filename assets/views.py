@@ -26,7 +26,7 @@ def asset_list(request):
             pklist = request.POST.get('asset_select')
             asset = get_object_or_404(AssetList, pk=pklist)
             new_assent.asset = asset
-            
+
             new_assent.save()
     else:
         asset_form = AssetForm()
@@ -48,6 +48,7 @@ def asset_update(request, pk):
         # asset.nome = request.POST['asset_name']
         asset.preco_maximo = request.POST['max_price']
         asset.preco_minimo = request.POST['min_price']
+        asset.tempo_check = request.POST['tempo_check']
         asset.save()
         return redirect('assets:list')
     return render(request, 'asset_update.html', {'asset': asset})
@@ -64,7 +65,7 @@ def asset_delete(request, pk):
 @login_required
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, user = request.user, id = pk, deleteted_at__isnull = True)
-    hist_price = HistoricalPrice.objects.filter(assetList = asset.asset).order_by('data')
+    hist_price = HistoricalPrice.objects.filter(assetList = asset.asset).order_by('-data')
 
     return render(request, 'asset_detail.html', {'asset': asset,'hist_price':hist_price})
 

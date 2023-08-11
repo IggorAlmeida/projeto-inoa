@@ -16,4 +16,12 @@ class AssetForm(forms.ModelForm):
             raise forms.ValidationError('Preço mínimo maior ou igual ao preço máximo!')
 
         return self.cleaned_data
+
+    def clean(self):
+
+        if self.cleaned_data.get('tempo_check') <= 0 or self.cleaned_data.get('tempo_check') >59:
+            raise forms.ValidationError('Instervalo de tempo não permitido!')
+
+        return self.cleaned_data
+
     
