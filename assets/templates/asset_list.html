@@ -3,6 +3,10 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
+    <h2>Add a new asset List</h2>
+    <form action="{% url 'assets:assetList_list' %}">
+        <p><input type="submit" value="Add Asset List"></p>
+    </form>
     <h2>Add a new asset</h2>
     <form action="." method="post">
         {{ asset_form.as_p }}

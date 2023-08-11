@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Add a new asset</h2>
+    <form action="{% url 'assets:assetList_list' %}" method="post">
+        {{ asset_form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Add asset"></p>
+    </form>
+    
+    <table>
+        <TR>
+            <TD>NOME</TD>
+            <TD>BOLSA</TD>
+        </TR>
+        {% for asset in assets %}
+        <TR>
+        <TD>{{ asset.nome }}</TD>
+        <TD>{{ asset.bolsa }}</TD>
+        </TR>
+        {% endfor %}
+    </table>
+{% endblock %}

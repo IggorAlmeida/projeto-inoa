@@ -4,10 +4,14 @@ from django.urls import reverse
 
 DEFAULT_ASSET_LIST_ID = 1
 
+BOLSA_CHOICES = (
+    ('SA','SA'),
+)
+
 
 class AssetList(models.Model):
     nome = models.CharField(max_length=100)
-    bolsa = models.CharField(max_length=5)
+    bolsa = models.CharField(max_length=5, choices=BOLSA_CHOICES)
 
     def __str__(self):
         return self.nome

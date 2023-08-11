@@ -4,7 +4,7 @@ from .models import Asset
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Asset, AssetList, HistoricalPrice
 from django.contrib.auth.decorators import login_required
-from .forms import AssetForm
+from .forms import AssetForm, AssetListForm
 from django.utils.timezone import now
 from datetime import datetime
 
@@ -68,5 +68,23 @@ def asset_detail(request, pk):
     hist_price = HistoricalPrice.objects.filter(assetList = asset.asset).order_by('-data')
 
     return render(request, 'asset_detail.html', {'asset': asset,'hist_price':hist_price})
+
+@login_required
+def assetList_list(request):
+    assetsList = AssetList.objects.all()
+    if request.method == 'POST':
+        # A comment was posted
+        assetList_form = AssetListForm(data=request.POST)
+
+        if assetList_form.is_valid():
+            # Create Comment object but don't save to database yet
+            new_assent = assetList_form.save(commit=False)
+
+            new_assent.save()
+    else:
+        assetList_form = AssetListForm()
+
+    return render(request, 'assetList_list.html', {'asset_form': assetList_form,'assets':assetsList,'section':'assets'})
+
 
 

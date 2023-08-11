@@ -115,6 +115,7 @@ TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 
 USE_TZ = True
+# USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -138,8 +139,8 @@ else:
 
 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'iggorcesar.cardoso@gmail.com'
-EMAIL_HOST_PASSWORD = 'i08@489I'
+EMAIL_HOST_USER = 'admin@gmail.com'
+EMAIL_HOST_PASSWORD = 'teste'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
@@ -149,6 +150,10 @@ CELERY_BEAT_SCHEDULE = {
     'obter-cotacoes-periodicamente': {
         'task': 'assets.tasks.obter_e_salvar_cotacoes',
         'schedule': 30.0,# Executar a cada 60 segundos (1 minuto)
+    },
+    'verificar-cotacoes-periodicamente': {
+        'task': 'assets.tasks.envio_email_cliente',
+        'schedule': 60.0,# Executar a cada 60 segundos (1 minuto)
     },
 }
 

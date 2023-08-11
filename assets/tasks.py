@@ -5,11 +5,9 @@ from assets.models import Asset, HistoricalPrice, AssetList
 import requests
 from datetime import datetime
 import yfinance as yf
-
-def format_b3_symbol(symbol):
-    # Formata o símbolo da ação para o formato aceito pelo Yahoo Finance para a B3.
-    # Adiciona '.SA' ao final do símbolo para especificar a bolsa brasileira.
-    return f"{symbol}.SA"
+import pytz
+from django.core.mail import send_mail
+from core import settings
 
 @shared_task
 def obter_e_salvar_cotacoes():
@@ -27,8 +25,6 @@ def obter_e_salvar_cotacoes():
 
         if ((data_last_insert == None) or (data_last_insert.data < max_datetime)) and len(data) > 0 :
             
-            #symbols_name = [format_b3_symbol(nome.get('asset')) for nome in Asset.objects.filter(deleteted_at__isnull = True).values('asset','tempo_check').distinct() if total_minutes % nome.get('tempo_check') == 0 ]
-
             if len(symbols_name)> 1:
 
                 values = data['Close'][symbols_name].values[-1]
@@ -48,45 +44,55 @@ def obter_e_salvar_cotacoes():
                     historical_price_instances.append(hist)
 
 
-    # initial_time = datetime(datetime.now().year, datetime.now().month, datetime.now().day,10,0)
-    # now_time = datetime.now().replace(second=0, microsecond=0)
-    # assets_list = AssetList.objects.filter(id__in = Asset.objects.filter(deleteted_at__isnull = True).values('asset').distinct())
-    # symbols = [format_b3_symbol(ativo.nome) for ativo in assets_list]
-    # data_last_insert = HistoricalPrice.objects.order_by('-data').first()
-    # assets = Asset.objects.filter(deleteted_at__isnull = True)
-    # assets_l = Asset.objects.filter(deleteted_at__isnull = True).values('asset').distinct()
-    #symbols = [format_b3_symbol(ativo.get('asset')) for ativo in Asset.objects.filter(deleteted_at__isnull = True).values('asset','tempo_check').distinct()]
-    
-    # if len(symbols) > 0:
-
-    #     data = yf.download(symbols, period='1d', interval='1m')
-    #     df_reset = data.reset_index()
-
-    #     max_datetime = df_reset['Datetime'].max()
-    #     # min_datetime = df_reset['Datetime'].min()
-
-    #     # total_minutes = (max_datetime.hour*60-max_datetime.minute) - (min_datetime.hour*60-min_datetime.minute)
-
-    #     if (data_last_insert == None) or (data_last_insert.data < max_datetime):
-            
-    #         symbols_name = symbols#[format_b3_symbol(nome.get('asset')) for nome in Asset.objects.filter(deleteted_at__isnull = True).values('asset','tempo_check').distinct() if total_minutes % nome.get('tempo_check') == 0 ]
-
-    #         values = data['Close'][symbols_name].values[-1]
-
-    #         symbols_name_insert = [name.split('.')[0] for name in symbols_name]
-
-    #         # Create a list of HistoricalPrice instances from the data
-    #         historical_price_instances = []
-    #         for name, price in zip(symbols_name_insert,values):
-    #             hist = HistoricalPrice(asset = name, preco = price, data = max_datetime )
-    #             hist.save()
-    #             historical_price_instances.append(hist)
 
     return "success"
 
 @shared_task
 def envio_email_cliente():
-    pass
+
+    today = datetime.now()
+    time_min = today.minute
+    assets = Asset.objects.filter(deleteted_at__isnull = True)
+
+    list_checks = [asset for asset in assets if time_min%asset.tempo_check == 0]
+    list_checks_assetList = list(set([asset.asset for asset in assets]))
+
+    sp_timezone = pytz.timezone('America/Sao_Paulo')
+
+    queryset_list = list(HistoricalPrice.objects.filter(assetList__in = list_checks_assetList).order_by('-data'))
+    dict_max_values = {}
+    for asset_list in queryset_list:
+        if asset_list.assetList not in dict_max_values.keys():
+            dict_max_values[asset_list.assetList] = asset_list
+
+    for asset in assets:
+
+        hist_price = dict_max_values[asset.asset]
+        if asset.preco_maximo <= hist_price.preco:
+            to_email=asset.user.email
+            nome_asset = asset.asset.nome
+            mail_subject = 'Aviso de preço!'
+            message = '{} atingiu o preço mmáximo definido.'.format(nome_asset)
+            send_mail(subject= mail_subject,message=message,from_email=settings.EMAIL_HOST_USER,recipient_list=[to_email],fail_silently=True,)
+        if asset.preco_minimo >= hist_price.preco:
+            to_email=asset.user.email
+            nome_asset = asset.asset.nome
+            mail_subject = 'Aviso de preço!'
+            message = '{} atingiu o preço mínimo definido.'.format(nome_asset)
+            send_mail(
+                subject= mail_subject,
+                message=message,
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[to_email],
+                fail_silently=True,
+            )
+
+
+    
+    return "success"
+
+
+    
 
 
             
