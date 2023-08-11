@@ -135,7 +135,7 @@ label {
     color:#333;
     margin-bottom:4px;
 }
-input, textarea {
+input, textarea, select {
     clear:both;
     float:left;
     margin:0 0 10px;

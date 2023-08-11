@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Log-in{% endblock %}
+
+{% block content %}
+<h2>Asset: {{asset.asset.nome}}</h2>
+<h3>Preço Máximo: {{asset.preco_maximo}}</h3>
+<h3>Preço Mínimo: {{asset.preco_minimo}}</h3>
+<h3>Tempo Check: {{asset.tempo_check}}</h3>
+<hr>
+
+    <form action="{% url 'assets:asset_update' asset.id %}">
+        <input type="submit" value="Update">
+    </form>
+    
+    <form action="{% url 'assets:asset_delete' asset.id %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" onclick="return confirm('Are you sure?')" value="Delete">
+    </form>
+
+<hr>
+    <table >
+        <thead>
+            <tr>
+                <th>DATE</th>
+                <th>TIME</th>
+                <th>PRICE</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for price in hist_price %}
+            <tr>    
+                <td>{{ price.data|date:"Y-m-d" }}</td>
+                <td>{{ price.data|time:"H:i:s" }}</td>
+                <td>{{ price.preco }}</td>
+            </tr>
+            
+            {% endfor %}
+
+        </tbody>
+        
+            
+    </table>
+    
+    
+{% endblock %}
+
+

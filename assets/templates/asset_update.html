@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<form action="{% url 'assets:asset_update' asset.id %}" method="post">
+    {% csrf_token %}
+    <!-- Add form fields for updating asset information -->
+    <!-- For example: -->
+    <label for="asset_name">Asset: {{asset.asset.nome}}</label>
+
+    <label for="max_price">Maximum Price:</label>
+    <input type="number" id="max_price" name="max_price" value="{{asset.preco_maximo}}">
+
+    <label for="min_price">Minimum Price:</label>
+    <input type="number" id="min_price" name="min_price" value="{{asset.preco_minimo}}">
+
+    <label for="max_price">Tempo Check:</label>
+    <input type="number" id="max_price" name="max_price" value="{{asset.tempo_check}}">
+
+    <input type="submit" value="Update">
+</form>
+{% endblock %}

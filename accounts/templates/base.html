@@ -11,8 +11,8 @@
         <span class="logo">Asset Price</span>
         {% if request.user.is_authenticated %}
         <ul class="menu">
-            <li ><a href="#">Assets</a></li>
-            <li ><a href="#"">User</a></li>
+            <li {% if section == "dashboard" %}class="selected"{% endif %}><a href="{% url "dashboard" %}">User</a></li>
+            <li {% if section == "assets" %}class="selected"{% endif %}><a href="{% url "assets:list" %}">Assets</a></li>
         </ul>
         {% endif %}
         

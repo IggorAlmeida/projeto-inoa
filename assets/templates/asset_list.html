@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <h2>Add a new asset</h2>
+    <form action="." method="post">
+        {{ asset_form.as_p }}
+        {% csrf_token %}
+        <p><input type="submit" value="Add asset"></p>
+    </form>
+    <table>
+        <TR>
+            <TD>NOME</TD>
+            <TD>PREÇO MÁX</TD>
+            <TD>PREÇO MÍN</TD>
+        </TR>
+        {% for asset in assets %}
+        <TR>
+        <TD><a href="{{ asset.get_absolute_url }}">{{ asset.asset.nome }}</a></TD>
+        <TD>{{ asset.preco_maximo }}</TD>
+        <TD>{{ asset.preco_minimo }}</TD>
+        </TR>
+        {% endfor %}
+    </table>
+{% endblock %}

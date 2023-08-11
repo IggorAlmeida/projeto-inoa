@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'accounts',
+    'assets',
     'django.contrib.admin',
 ]
 
@@ -128,3 +129,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = reverse_lazy('dashboard')
 LOGIN_URL = reverse_lazy('login')
 LOGOUT_URL = reverse_lazy('logout')
+
+if DEBUG :
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'iggorcesar.cardoso@gmail.com'
+EMAIL_HOST_PASSWORD = 'i08@489I'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+from datetime import timedelta
+from celery.schedules import crontab
+CELERY_BEAT_SCHEDULE = {
+    'obter-cotacoes-periodicamente': {
+        'task': 'assets.tasks.obter_e_salvar_cotacoes',
+        'schedule': 30.0,
+        'args': (16, 16),
+        'options': {
+            'expires': 15.0,
+        },  # Executar a cada 60 segundos (1 minuto)
+    },
+}
