@@ -18,7 +18,7 @@ $ soucer venv/bin/activate
 $ pip install requirements.txt
 
 # Execute o makemigrations
-$ python manage.py makemigration
+$ python manage.py makemigration assets
 
 # Aplique as migrações
 $ python manage.py migrate
