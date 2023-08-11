@@ -109,7 +109,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -147,10 +148,7 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'obter-cotacoes-periodicamente': {
         'task': 'assets.tasks.obter_e_salvar_cotacoes',
-        'schedule': 30.0,
-        'args': (16, 16),
-        'options': {
-            'expires': 15.0,
-        },  # Executar a cada 60 segundos (1 minuto)
+        'schedule': 30.0,# Executar a cada 60 segundos (1 minuto)
     },
 }
+

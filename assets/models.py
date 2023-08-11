@@ -31,3 +31,6 @@ class HistoricalPrice(models.Model):
     assetList = models.ForeignKey(AssetList,on_delete=models.CASCADE, default=DEFAULT_ASSET_LIST_ID)
     data = models.DateTimeField()
     preco = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.assetList.nome} - {self.data}"

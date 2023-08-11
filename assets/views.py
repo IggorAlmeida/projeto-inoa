@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from .models import Asset
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Asset, AssetList
+from .models import Asset, AssetList, HistoricalPrice
 from django.contrib.auth.decorators import login_required
 from .forms import AssetForm
 from django.utils.timezone import now
@@ -22,6 +22,11 @@ def asset_list(request):
             # Assign the current post to the comment
             new_assent.user = request.user
             # Save the comment to the database
+
+            pklist = request.POST.get('asset_select')
+            asset = get_object_or_404(AssetList, pk=pklist)
+            new_assent.asset = asset
+            
             new_assent.save()
     else:
         asset_form = AssetForm()
@@ -59,10 +64,8 @@ def asset_delete(request, pk):
 @login_required
 def asset_detail(request, pk):
     asset = get_object_or_404(Asset, user = request.user, id = pk, deleteted_at__isnull = True)
-    # hist_price = HistoricalPrice.objects.filter(asset=asset.nome).order_by('data')
-    hist_price = []
+    hist_price = HistoricalPrice.objects.filter(assetList = asset.asset).order_by('data')
 
-    
     return render(request, 'asset_detail.html', {'asset': asset,'hist_price':hist_price})
 
 
